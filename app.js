@@ -48,7 +48,7 @@ app.get('/productos/:id', async (req, res) => {
 
         const pool = await poolPromise;
         const result = await pool.request().query(query);
-        res.json(result.recordset);
+        res.json(result.recordset[0]);
     } catch (err) {
         res.status(500);
         res.send(err.message);
@@ -152,7 +152,7 @@ app.get('/categorias/:id', async (req, res) => {
 
         const pool = await poolPromise;
         const result = await pool.request().query(query);
-        res.json(result.recordset);
+        res.json(result.recordset[0]);
     } catch (err) {
         res.status(500);
         res.send(err.message);
@@ -235,9 +235,10 @@ app.delete('/categorias/:id', async (req, res) => {
 app.get('/subcategorias', async (req, res) => {
     try {
         const query = `
-            SELECT id, nombre 
-            FROM subcategorias 
-            WHERE status = 1`;
+            SELECT s.id, s.nombre, c.nombre AS categoria
+            FROM subcategorias s 
+            INNER JOIN categorias c ON s.id_categoria = c.id
+            WHERE s.status = 1`;
 
         const pool = await poolPromise;
         const result = await pool.request().query(query);
@@ -260,7 +261,7 @@ app.get('/subcategorias/:id', async (req, res) => {
 
         const pool = await poolPromise;
         const result = await pool.request().query(query);
-        res.json(result.recordset);
+        res.json(result.recordset[0]);
     } catch (err) {
         res.status(500);
         res.send(err.message);
